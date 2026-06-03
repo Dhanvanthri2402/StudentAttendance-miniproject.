@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 
 @RestController
 public class Attcontroller {
@@ -20,7 +21,7 @@ public class Attcontroller {
     }
 
     @PostMapping("/reg")
-    public Student registerdetails(@RequestBody Student newStudent){
+    public Student registerdetails(@Valid @RequestBody Student newStudent){
         return attservice.register(newStudent);
     }
 

@@ -16,7 +16,7 @@ public class Attcontroller {
     @Autowired
     private Attservice attservice;
     @GetMapping("/read/{id}")
-    public Optional<Student> readstdetails(@PathVariable Long id){
+    public StudentDTO readstdetails(@PathVariable Long id){
         return attservice.getstatus(id);
     }
 

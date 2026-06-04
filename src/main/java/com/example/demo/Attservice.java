@@ -19,8 +19,14 @@ public class Attservice {
         return attrepository.save(student);
     }
 
-    public Optional<Student> getstatus(Long id){
-        return attrepository.findById(id);
+    public StudentDTO getstatus(Long id){
+       Student stentity = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id cannot be found "));
+
+       StudentDTO sdto = new StudentDTO();
+       sdto.setName(stentity.getName());
+       sdto.setStatus(stentity.getStatus());
+
+       return sdto;
     }
 
     public Student uplocation(Long id, Student upstudent){

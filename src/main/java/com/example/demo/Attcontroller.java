@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 public class Attcontroller {
@@ -33,6 +34,16 @@ public class Attcontroller {
     @DeleteMapping("/del/{id}")
     public String deletedetails(@PathVariable Long id){
         return attservice.delatt(id);
+    }
+
+    @GetMapping("/r/status/{status}")
+    public List<StudentDTO> Getstbystatus(@PathVariable String status){
+        return attservice.getstudentbystatus(status);
+    }
+
+    @GetMapping("r/loc/{location}")
+    public List<StudentDTO> Getstbylocation(@PathVariable String location){
+        return attservice.getstudentbylocation(location);
     }
 
 

@@ -2,6 +2,8 @@ package com.example.demo;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class Attservice {
@@ -50,5 +52,34 @@ public class Attservice {
         attrepository.deleteById(id);
         return "Student Att and id is deleted";
     }
+
+    public List<StudentDTO> getstudentbystatus(String status){
+
+        List<Student> rawentity = attrepository.findByStatus(status);
+
+        return rawentity.stream().map(Student-> {
+            StudentDTO dto = new StudentDTO();
+            dto.setStatus(Student.getStatus());
+            dto.setName(Student.getName());
+            return dto;
+        }
+
+        ).collect(Collectors.toList());
+    }
+
+    public List<StudentDTO> getstudentbylocation(String location){
+        List<Student> rentity = attrepository.findByLocation(location);
+
+        return rentity.stream().map(Student -> {
+            StudentDTO dtol = new StudentDTO();
+            dtol.setName(Student.getName());
+            dtol.setLocation(Student.getLocation());
+            dtol.setStatus(Student.getStatus());
+
+            return dtol;
+        }).collect(Collectors.toList());
+    }
+
+
 
 }

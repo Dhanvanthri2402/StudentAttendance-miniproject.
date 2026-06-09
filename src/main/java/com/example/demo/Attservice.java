@@ -4,82 +4,81 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 @Service
 public class Attservice {
     @Autowired
     private Attrepository attrepository;
 
-    public Student register(Student student){
-        if(student.getLocation().equals("in")){
-            student.setStatus("Attended");
-        }
-        else{
-            student.setStatus("Not Attended");
-        }
+    @Autowired
+    private AttrecordRepository attrecordRepository;
 
+    public Student register(Student student){
         return attrepository.save(student);
     }
 
     public StudentDTO getstatus(Long id){
        Student stentity = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id cannot be found "));
-
        StudentDTO sdto = new StudentDTO();
        sdto.setName(stentity.getName());
        sdto.setStatus(stentity.getStatus());
-
        return sdto;
     }
 
-    public Student uplocation(Long id, Student upstudent){
-        Student estudent = attrepository.findById(id).orElseThrow(()-> new RuntimeException("cannot update"));
-        estudent.setName(upstudent.getName());
-        estudent.setAge(upstudent.getAge());
-        estudent.setLocation(upstudent.getLocation());
-        if(estudent.getLocation().equals("in")){
-            estudent.setStatus("Attended");
-        }
-        else{
-            estudent.setStatus("Not Attended");
-        }
-
-        return attrepository.save(estudent);
-
-
+    public String updatestudent(Long id,Student student){
+        Student student1 = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id cannot be found"));
+        student1.setName(student.getName());
+        student1.setAge(student.getAge());
+        student1.setStatus(student.getStatus());
+        attrepository.save(student1);
+        return "Student details updated for this id "+id;
     }
 
-    public String delatt(Long id){
+    public String updatestatus(Long id,String status){
+        Student student1 = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id cannot be found"));
+        student1.setStatus(status);
+        attrepository.save(student1);
+        return "Status of the student with this id is updated "+id;
+    }
+
+
+    public String deletestudent(Long id){
         attrepository.deleteById(id);
-        return "Student Att and id is deleted";
+        return "Student details are deleted for this id "+id;
     }
 
     public List<StudentDTO> getstudentbystatus(String status){
-
         List<Student> rawentity = attrepository.findByStatus(status);
-
         return rawentity.stream().map(Student-> {
             StudentDTO dto = new StudentDTO();
             dto.setStatus(Student.getStatus());
             dto.setName(Student.getName());
-            return dto;
+            return dto;}).collect(Collectors.toList());
+    }
+
+    public String markDailyAttendance(Long id,String status){
+        Student student = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id doesn't exist"));
+        LocalDate today = LocalDate.now();
+        boolean isMarked = student.getDailyrecord().stream().anyMatch(attrecord -> attrecord.getDate().equals(today));
+        if(isMarked){
+            return "Attendance for this student is already marked " + id;
         }
-
-        ).collect(Collectors.toList());
+        Attrecord attrecord = new Attrecord();
+        attrecord.setDate(today);
+        attrecord.setStatus(status);
+        attrecord.setStudent(student);
+        attrecordRepository.save(attrecord);
+        return "Attendance for this id is marked "+id;
     }
 
-    public List<StudentDTO> getstudentbylocation(String location){
-        List<Student> rentity = attrepository.findByLocation(location);
-
-        return rentity.stream().map(Student -> {
-            StudentDTO dtol = new StudentDTO();
-            dtol.setName(Student.getName());
-            dtol.setLocation(Student.getLocation());
-            dtol.setStatus(Student.getStatus());
-
-            return dtol;
-        }).collect(Collectors.toList());
+    public List<AttrecordDTO> getAttByid(Long id) {
+        Student student = attrepository.findById(id).orElseThrow(() -> new RuntimeException("Student with this id is not recorded"));
+        return student.getDailyrecord().stream().map(attrecord -> {
+            AttrecordDTO dtoa = new AttrecordDTO();
+            dtoa.setDate(attrecord.getDate());
+            dtoa.setAttid(attrecord.getAttid());
+            dtoa.setStatus(attrecord.getStatus());
+            return dtoa;}).collect(Collectors.toList());
     }
-
-
-
 }

@@ -1,12 +1,5 @@
 package com.example.demo;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -16,24 +9,28 @@ public class Attcontroller {
 
     @Autowired
     private Attservice attservice;
+
     @GetMapping("/read/{id}")
-    public StudentDTO readstdetails(@PathVariable Long id){
-        return attservice.getstatus(id);
-    }
+    public StudentDTO readstdetails(@PathVariable Long id){ return attservice.getstatus(id); }
 
     @PostMapping("/reg")
     public Student registerdetails(@Valid @RequestBody Student newStudent){
         return attservice.register(newStudent);
     }
 
-    @PutMapping("/updt/{id}")
-    public Student updatedetails(@PathVariable Long id,@RequestBody Student nstudent){
-        return attservice.uplocation(id,nstudent);
+    @PutMapping("update/{id}")
+    public String updatedetails(@PathVariable Long id,@RequestBody Student student){
+        return attservice.updatestudent(id,student);
+    }
+
+    @PutMapping("updatests/{id}")
+    public String updatestudentstatus(@PathVariable Long id, @RequestParam String status){
+        return attservice.updatestatus(id,status);
     }
 
     @DeleteMapping("/del/{id}")
     public String deletedetails(@PathVariable Long id){
-        return attservice.delatt(id);
+        return attservice.deletestudent(id);
     }
 
     @GetMapping("/r/status/{status}")
@@ -41,9 +38,15 @@ public class Attcontroller {
         return attservice.getstudentbystatus(status);
     }
 
-    @GetMapping("r/loc/{location}")
-    public List<StudentDTO> Getstbylocation(@PathVariable String location){
-        return attservice.getstudentbylocation(location);
+
+    @PostMapping("/regatt/{id}")
+    public String markattendance(@PathVariable Long id, @RequestParam String status){
+        return attservice.markDailyAttendance(id,status);
+    }
+
+    @GetMapping("readatt/{id}")
+    public List<AttrecordDTO> getattrecordbyid(@PathVariable Long id){
+        return attservice.getAttByid(id);
     }
 
 

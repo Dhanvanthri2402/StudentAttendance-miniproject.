@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.Entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
@@ -22,6 +22,12 @@ public class Attrecord {
     @JoinColumn(name = "Student_id",nullable = false)
     private Student student;
 
+    @ManyToOne
+    @JoinColumn(name="session_id")
+    private ClassSession classSession;
+
+
+
     public void setAttid(Long attid){
         this.attid=attid;
     }
@@ -36,6 +42,10 @@ public class Attrecord {
 
     public void setStudent(Student student){
         this.student=student;
+    }
+
+    public void setClassSession(ClassSession classSession) {
+        this.classSession = classSession;
     }
 
     public Long getAttid(){
@@ -54,5 +64,7 @@ public class Attrecord {
         return student;
     }
 
-
+    public ClassSession getClassSession() {
+        return classSession;
+    }
 }

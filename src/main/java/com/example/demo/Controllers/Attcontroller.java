@@ -1,10 +1,15 @@
-package com.example.demo;
+package com.example.demo.Controllers;
+import com.example.demo.DTOS.AttrecordDTO;
+import com.example.demo.Services.Attservice;
+import com.example.demo.Entities.Student;
+import com.example.demo.DTOS.StudentDTO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping("/student")
 public class Attcontroller {
 
     @Autowired
@@ -14,7 +19,7 @@ public class Attcontroller {
     public StudentDTO readstdetails(@PathVariable Long id){ return attservice.getstatus(id); }
 
     @PostMapping("/reg")
-    public Student registerdetails(@Valid @RequestBody Student newStudent){
+    public String registerdetails(@Valid @RequestBody Student newStudent){
         return attservice.register(newStudent);
     }
 
@@ -39,9 +44,9 @@ public class Attcontroller {
     }
 
 
-    @PostMapping("/regatt/{id}")
-    public String markattendance(@PathVariable Long id, @RequestParam String status){
-        return attservice.markDailyAttendance(id,status);
+    @PostMapping("/markatt/{id}")
+    public String markattendanceforstudent(@PathVariable Long id,@RequestParam Long sessionid,@RequestParam String status){
+        return attservice.markSessionAttendance(id,sessionid,status);
     }
 
     @GetMapping("readatt/{id}")

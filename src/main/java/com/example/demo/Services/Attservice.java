@@ -1,7 +1,15 @@
-package com.example.demo;
+package com.example.demo.Services;
+import com.example.demo.DTOS.AttrecordDTO;
+import com.example.demo.DTOS.StudentDTO;
+import com.example.demo.Entities.Attrecord;
+import com.example.demo.Entities.ClassSession;
+import com.example.demo.Entities.Student;
+import com.example.demo.Repositories.AttrecordRepository;
+import com.example.demo.Repositories.Attrepository;
+import com.example.demo.Repositories.ClassSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.Optional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
@@ -14,8 +22,13 @@ public class Attservice {
     @Autowired
     private AttrecordRepository attrecordRepository;
 
-    public Student register(Student student){
-        return attrepository.save(student);
+    @Autowired
+    private ClassSessionRepository classSessionRepository;
+
+    public String register(Student student){
+         attrepository.save(student);
+         return "Student details registered successfully";
+
     }
 
     public StudentDTO getstatus(Long id){
@@ -57,19 +70,24 @@ public class Attservice {
             return dto;}).collect(Collectors.toList());
     }
 
-    public String markDailyAttendance(Long id,String status){
-        Student student = attrepository.findById(id).orElseThrow(()-> new RuntimeException("Student with this id doesn't exist"));
-        LocalDate today = LocalDate.now();
-        boolean isMarked = student.getDailyrecord().stream().anyMatch(attrecord -> attrecord.getDate().equals(today));
-        if(isMarked){
-            return "Attendance for this student is already marked " + id;
+    public String markSessionAttendance(Long stid,Long sessionid,String status){
+        Student student = attrepository.findById(stid).orElseThrow(()->new RuntimeException("Student id invalid"));
+        ClassSession session = classSessionRepository.findById(sessionid).orElseThrow(()-> new RuntimeException("Session id invalid"));
+        if(!"LIVE".equals(session.getStatus())){
+            throw new RuntimeException("Attendance cannot be marked for the provided session id");
+        }
+        boolean ismarked = session.getAttendancerecords().stream().anyMatch(attrecord->attrecord.getStudent().getID().equals(stid));
+        if(ismarked){
+            return "The attendance is marked for the student with this id "+stid;
         }
         Attrecord attrecord = new Attrecord();
-        attrecord.setDate(today);
+        attrecord.setClassSession(session);
         attrecord.setStatus(status);
+        attrecord.setDate(LocalDate.now());
         attrecord.setStudent(student);
         attrecordRepository.save(attrecord);
-        return "Attendance for this id is marked "+id;
+
+        return "Attendance marked for this "+stid +" in the session "+sessionid;
     }
 
     public List<AttrecordDTO> getAttByid(Long id) {
@@ -79,6 +97,9 @@ public class Attservice {
             dtoa.setDate(attrecord.getDate());
             dtoa.setAttid(attrecord.getAttid());
             dtoa.setStatus(attrecord.getStatus());
+            if(attrecord.getClassSession()!=null&&attrecord.getClassSession().getCourse()!=null){
+                dtoa.setCoursename(attrecord.getClassSession().getCourse().getCoursename());
+            }
             return dtoa;}).collect(Collectors.toList());
     }
 }

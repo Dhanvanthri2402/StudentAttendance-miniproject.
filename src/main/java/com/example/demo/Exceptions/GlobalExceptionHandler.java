@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.Exceptions;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +23,15 @@ public class GlobalExceptionHandler {
         });
 
 
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public Map<String,String> handleAllOtherExceptions(Exception ex){
+        Map<String,String> errors = new HashMap<>();
+        errors.put("error","Server crashed try after sometime");
+        errors.put("details", ex.getMessage());
         return errors;
     }
 }

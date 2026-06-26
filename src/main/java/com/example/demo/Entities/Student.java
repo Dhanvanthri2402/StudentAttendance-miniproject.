@@ -1,13 +1,7 @@
-package com.example.demo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+package com.example.demo.Entities;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 
 import java.util.List;
@@ -30,8 +24,15 @@ public class Student {
     @NotBlank(message="Active or Inactive")
     private String status;
 
+    @NotBlank(message="Enter the department name without mistakes")
+    private String department;
+
     @OneToMany(mappedBy = "student",cascade = CascadeType.ALL,fetch=FetchType.LAZY)
     private List <Attrecord> dailyrecord = new ArrayList<>();
+
+    @ManyToMany(mappedBy="enrolledstudents")
+    List<Course> enrolledcourses;
+
 
     public void setId(Long id) {
         this.id = id;
@@ -47,6 +48,22 @@ public class Student {
 
     public String getName(){
         return name;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setEnrolledcourses(List<Course> enrolledcourses) {
+        this.enrolledcourses = enrolledcourses;
+    }
+
+    public List<Course> getEnrolledcourses() {
+        return enrolledcourses;
     }
 
     public void setAge(int age){
